@@ -1,37 +1,97 @@
-.TH BED 1
+.TH cserver 1
 .SH NAME
-bed \- backend daemon process that runs on frontend machine
+cserver \- connection server connects backend consoles to remote frontend terminals
 .SH SYNOPSIS
-.B bed
+.B cserver
 .SH DESCRIPTION
-.I Bed
-is the \f3B\f1ack\f3E\f1nd \f3D\f1aemon that runs on the frontend machine.
-It accepts status, odt, and download requests from other frontends and
-then services these requests.  It reads the configuration of the backend
-machines it needs to service from a \f2Machines database\f1, and it keeps
-lock files for each reserved backend machine.
+The
+.I cserver
+daemon allows the \f2cs-console\f1 and \f2cs-status\f1 utilities run
+on the XINU Lab frontend machines to connect with the consoles of the
+backend machines.
+
+Upon powering up, the backend machines boot from floppy disk, and load
+a small monitor program that uses the COM port as console.  These
+serial port lines all connect back to a terminal server, a hardware
+device that allows a single host machine to manage the consoles of
+many other headless machines.  The
+.I cserver
+runs on the machine with access to the terminal server, doling out
+access to the consoles over the network to frontends that request
+connections via a well-known UDP port.  A configuration file tells the
+.I cserver
+daemon about each of the connections it can manage -- how to connect
+to the console, how to download a kernel, and how to powercycle each
+backend.
+
+Kernel downloads are actually a two-step process.  The
+.I cserver
+works with the \f2cs-console\f1 utility to copy the user-specified
+kernel over the network into a temporary directory owned by the
+daemon.  Then, when the console for the associated backend is told to
+"boot", the monitor on the backend contacts a tftp server running on
+the same host as the
+.I cserver
+and downloads the kernel from the temporary directory.
+
 .PP
-.I Bed
-can be run by anyone \- it is not a setuid program.  It runs in the
-background, so after typing \f2bed\f1 it returns immediately.
-.I Bed
-actually starts 2 processes running in the background, a parent process and
-one child process.  The parent process simply starts the child process and
-then waits for it to die.  The child process is the \f2real\f1 BED process.
-It is the one that services requests from other frontends.  If for some
-reason the child process dies the parent detects it and restarts a new
-child process as the BED process.  This insures that the BED process will
-always be running.
-.PP
-\f2Status\f1 requests are replied to immediately, but \f2odt\f1 and
-\f2download\f1 requests cause a new process to be forked off to handle the
-request. 
 .SH FILES
-/usr/xinu/database/machine  Backend machines database 
+/p/xinu/etc/connections.config  Backend configuration file
 .br
-/tmp/xinu/*  Backend reservation lock files
+/p/xinu/etc/conlog/*  Log files
 .SH "SEE ALSO"
-bedkill(1), bedreboot(1)
-.SH BUGS
+cs-console(1), cs-status(1)
+.SH HISTORY
+The
+.B cserver
+daemon has a long history.
+
+The original ancestors of the
+.B cserver
+are probably Bob Brown's serial-line downloader for LSI-11s, and his
+"odt" utility, an early ancestor of \f2cs-console\f1 that connected a
+screen/keyboard to a specific serial line.
+
+Around 1978, Doug Comer rewrote the software to be used by multiple
+students in multiple courses all sharing multiple backends.  Also
+about this time, Comer added a \f2lusers\f1 command that allowed one
+to see a list of ``LSI users'', and the predecessor of \f2cs-status\f1
+was born.
+
+Raj Yavatkar and Shawn Ostermann expanded the system to a
+client-server environment and experimented with an Ethernet
+downloader.
+
+Andy Muckelbauer (with help from Shawn Ostermann) rewrote the entire
+toolset, changing the paradigm from individual tools to a single
+program that handled downloading, status, and console connections.
+Thus, \f2cs-console\f1 was born.
+
+Vince Russo and Andy Muckelbauer hooked up the first X10-based
+rebooter system to power-cycle backends.
+
+Doug Comer and Vince Russo devised the second, parallel-port driven
+rebooter system and Brian Board built the hardware.
+
+John Lin ported Xinu to the Intel hardware, created boot disks, and
+modified the downloader.  This is the most direct ancestor to the
+current XINU Lab architecture.
+
+Mike Evangelista and Gustavo Rodriguez-Rivera reorganized and extended
+many aspects of the codebase.
+
+At the turn of the millenium, a large infusion of new backend machines
+tripled the scale of the XINU Lab.  Ben Kuperman and Florian Kerschbaum
+added PCI support to the base XINU kernel, allowing modern PC's to be
+used as backends.
+
+The current incarnation of the console tools (which we will call v2.0,
+for lack of any version control over the past two decades,) has been
+dusted off and ported to Linux by Chris Telfer and Dennis Brylow.
+Dennis established a centralized repository for XINU kernel and
+support tool source code, added TCP wrapper support to the connection
+server daemon, and designed an extensible, serial-port driven rebooter
+system.
+
 
 
