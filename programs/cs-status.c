@@ -25,10 +25,6 @@ main( argc, argv )
 	class[ 0 ] = '\0';
 	class[ MAXCLASSNAME - 1 ] = '\0';
 
-	/* Put in some defaults. */
-	strncpy( class, "i586", MAXCLASSNAME - 1 );
-	strncpy( host, "helga", MAXHOSTNAME - 1 );
-	
 	for( i = 1; i < argc; i++ ) {
 		if( strequ( argv[ i ], "-h" ) ) {
 			printusage( argv[ 0 ] );
@@ -71,9 +67,12 @@ main( argc, argv )
 		fflag = bflag = 1;
 	}
 
-	if( ( sock = statusrequest( connection, class, host ) ) < 0 ) {
-		exit( 1 );
-	}
+	if( ( sock = statusrequest( connection, 
+				    getdfltClass( class, connection ), 
+				    host ) ) < 0 ) 
+	  {
+	    exit( 1 );
+	  }
 	while( 1 ) {
 		struct reply reply;
 		if( statusrecv( sock, & reply ) < 0 ) {
