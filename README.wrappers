@@ -1,0 +1,27 @@
+							2002 Jan 15
+
+   The current incarnation of the cserver daemon uses TCP Wrappers to
+regulate access to the backend consoles.
+   Helga's current settings are as follows.
+
+/usr/local/etc/hosts.allow:
+
+	cserver : 128.10. 128.211.0.0/255.255.240.0
+
+/usr/local/etc/hosts.deny:
+
+	cserver : ALL
+
+  See the man page for hosts_access [hosts_access(3) under Linux,
+hosts_access(L) under Solaris,] for more details.
+   The TCP Wrappers library and header files reside in different places
+on our various systems, which may result in confusion down the road.
+At the time of this writing, here is where these can be found:
+
+		tcpd.h				libwrap.a
+Linux (S3)	Standard include path		Standard lib path
+Linux (CS)	/p/tcp_wrappers/include/tcpd.h	/p/tcp_wrappers/lib/libwrap.a
+Solaris (CS)	/p/misc/include/tcpd.h		/p/misc/lib/libwrap.a
+
+   Makefiles in the build directories may have to be altered, depending
+on where these files are on your system.
