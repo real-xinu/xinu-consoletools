@@ -176,10 +176,8 @@ statusrequest( connection, class, host )
 		bcast = 1;
 	}
 	if( bcast > 0 ) {
-
 		status = bcastUDP( sock, (char *) & req,
-				  sizeof( struct request), CS_PORT );
-		
+				   sizeof( struct request), CS_PORT );
 		if( status < 0 ) {
 			fprintf( stderr,
 				"error: broadcasting status request failed\n");

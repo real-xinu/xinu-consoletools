@@ -117,7 +117,7 @@ getTCPConnection( connection, class, host, steal, replies, cnt )
  * getdfltClass
  *---------------------------------------------------------------------------
  */
-static  char *
+char *
 getdfltClass( class, connection )
      char * class, * connection;
 {
