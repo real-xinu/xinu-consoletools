@@ -25,7 +25,8 @@ LIB := lib.a
 
 PROGRAMS :=  $(basename $(notdir $(wildcard $(TOP)/programs/*.c)))
 
-all: $(PROGRAMS) cserver
+# all: $(PROGRAMS) cserver
+all: $(PROGRAMS)
 
 $(PROGRAMS): % : %.o $(LIB)
 	$(CC) $(LDFLAGS) -o $@ $@.o $(LIB)
