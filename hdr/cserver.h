@@ -6,13 +6,13 @@
 #define __cserver_h__
 
 /* configuration database name */
-#define CS_CONFIGURATIONFILE	"/p/srg/etc/conconfig/connections.config"
+#define CS_CONFIGURATIONFILE	"/p/xinu/etc/conconfig/connections.config"
     
 /* log directory to write errors to	*/
-#define	CS_LOGGINGDIR		"/p/srg/etc/conlog/"
+#define	CS_LOGGINGDIR		"/p/xinu/etc/conlog/"
 
 /* group connect server should run as (optional) */
-#define CS_GROUP		"srg"
+#define CS_GROUP		"newxinu"
     
 /* port server will listen on	*/
 #define CS_PORT			2025
@@ -31,7 +31,7 @@
 #define MAXSERVERS		128
 
 /* default class name when making a connection */
-#define DEFAULTCLASSNAME 	"SUN"
+#define DEFAULTCLASSNAME 	"i586"
 
 /* Environment Variables */
 
