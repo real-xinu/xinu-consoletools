@@ -6,17 +6,17 @@ cserver \- connection server connects backend consoles to remote frontend termin
 .SH DESCRIPTION
 The
 .I cserver
-daemon allows the \f2cs-console\f1 and \f2cs-status\f1 utilities run
+daemon allows the \f2cs-console\f1 and \f2cs-status\f1 utilities running
 on the XINU Lab frontend machines to connect with the consoles of the
 backend machines.
 
 Upon powering up, the backend machines boot from floppy disk, and load
 a small monitor program that uses the COM port as console.  These
-serial port lines all connect back to a terminal server, a hardware
+serial port lines all connect back to a terminal annex, a hardware
 device that allows a single host machine to manage the consoles of
 many other headless machines.  The
 .I cserver
-runs on the machine with access to the terminal server, doling out
+runs on the machine with access to the terminal annex, doling out
 access to the consoles over the network to frontends that request
 connections via a well-known UDP port.  A configuration file tells the
 .I cserver
@@ -65,7 +65,7 @@ downloader.
 Andy Muckelbauer (with help from Shawn Ostermann) rewrote the entire
 toolset, changing the paradigm from individual tools to a single
 program that handled downloading, status, and console connections.
-Thus, \f2cs-console\f1 was born.
+Thus, the \f2cserver\f1 daemon was born.
 
 Vince Russo and Andy Muckelbauer hooked up the first X10-based
 rebooter system to power-cycle backends.
@@ -73,7 +73,7 @@ rebooter system to power-cycle backends.
 Doug Comer and Vince Russo devised the second, parallel-port driven
 rebooter system and Brian Board built the hardware.
 
-John Lin ported Xinu to the Intel hardware, created boot disks, and
+John Lin ported Xinu to Intel hardware, created boot disks, and
 modified the downloader.  This is the most direct ancestor to the
 current XINU Lab architecture.
 
@@ -81,9 +81,9 @@ Mike Evangelista and Gustavo Rodriguez-Rivera reorganized and extended
 many aspects of the codebase.
 
 At the turn of the millenium, a large infusion of new backend machines
-tripled the scale of the XINU Lab.  Ben Kuperman and Florian Kerschbaum
-added PCI support to the base XINU kernel, allowing modern PC's to be
-used as backends.
+tripled the scale of the XINU Lab.  Ben Kuperman and Florian
+Kerschbaum added PCI ethernet driver support to the base XINU kernel,
+allowing modern PC's to be used as backends.
 
 The current incarnation of the console tools (which we will call v2.0,
 for lack of any version control over the past two decades,) has been
