@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <ctype.h>
-#include <sgtty.h>
 #include <termios.h>
 #include <sys/types.h>
 #include <sys/file.h>
