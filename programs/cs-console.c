@@ -160,7 +160,11 @@ main( argc, argv )
 	connection[ MAXCONNECTIONNAME - 1 ] = '\0';
 	class[ 0 ] = '\0';
 	class[ MAXCLASSNAME - 1 ] = '\0';
-	
+
+	/* Put in some likely defaults. */
+	strncpy( class, "i586", MAXCLASSNAME - 1 );
+	strncpy( host, "helga", MAXHOSTNAME - 1 );
+
 	for( i = 1; i < argc; i++ ) {
 		if( strequ( argv[ i ], "-h" ) ) {
 			printusage( prog );
