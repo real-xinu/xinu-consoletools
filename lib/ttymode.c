@@ -77,16 +77,6 @@ if ( ttyissaved[fd] )
 }
 
 
-/* run at beginning : atexit(tty_atexit); */
-void
-tty_atexit(void)
-{
-int i;
-  for ( i = 0 ; i < NTTY ; ++i )
-    restoretty(i);
-}
-
-
 void
 restoretty(
    int fd)
@@ -95,4 +85,14 @@ restoretty(
     tcsetattr(fd, TCSAFLUSH, savedttys + fd);
 
   ttyissaved[fd] = 0;
+}
+
+
+/* run at beginning : atexit(tty_atexit); */
+void
+tty_atexit(void)
+{
+int i;
+  for ( i = 0 ; i < NTTY ; ++i )
+    restoretty(i);
 }
