@@ -1,24 +1,70 @@
-.TH CS\-STATUS 1
+.TH cs\-status 1
 .SH NAME
 cs\-status \- list connection servers and current status of connections
 .SH SYNOPSIS
-.B cs\-status [\-b] [\-f] [\-c class] [\-s server] [connection]
+.B cs\-status [\-h] [\-b] [\-f] [\-c class] [\-s server] [connection]
 .SH DESCRIPTION
 .I cs\-status
-displays information about each connection server that is running.
-This information includes the machine name the server is running on
-and the state of each of the server's connections.  For each
-connections the the name, class, login name of the user who currently
+displays information about each cserver daemon that is running.
+Cservers (connection servers) provide connectivity between frontend
+machines and the console terminals of the backend machines.
+Information provided includes the machine name the server is running on
+and the state of each of the backends connected to the server.  For each
+connection the name, class, login name of the user who currently
 has the connection reserved, and the time the connection was established
-can displayed.
+can be displayed.
 
-The options are used to control the information displayed.  If the \-b
-flag is used, the information about the connection's state will be displayed.
-If the \-f option is used, information about the connection server will be
-displayed.
-In the absence of both the \-f and \-b option, both the server and connection
-information will be displayed.  The \-c class and connection option limit
-the output to only those connections that corresponding fields match.
-The \-s server is used to limit the query to a specific connection server.
+Options are:
+.TP
+.BI \-c " class"
+Class. Show the machines in class
+.I class
+on the cserver.  The default class is i586.
+The value of
+.I class
+can also be set using the environment
+variable "CS_CLASS".
+.TP
+.BI \-s " server"
+Server. Uses the hostname or IP address
+.I server
+to communicate with the backend console terminal server daemon.
+(Also called the "cserver" daemon.)  By default,
+\f2cs-status\f1 will send out a broadcast request for the proper
+server on the current subnet.  This parameter should only be set if
+selecting between several available servers, or connecting to a server
+on another subnet.  The value of
+.I server
+can also be set using the colon-delimited environment variable
+"CS_SERVERS".
+.TP
+.BI \-h
+Help.  Prints a short usage blurb.
+.TP
+.BI \-b
+Backend only.  Display only information about the backends.
+.TP
+.BI \-f
+Display only information about the cserver daemons running.
 .SH "SEE ALSO"
-cserver(1)
+cserver(1), cs-console(1)
+.SH BUGS
+On some systems, network broadcast search for cserver daemons will
+fail if the environment variable CS_SERVERS is set to a broadcast
+address, like "128.10.3.255".
+.SH "HISTORY"
+The exact lineage of
+.B cs-status
+is forever lost in the sands of time.
+The original concept was borrowed from the LSI-11 utility program
+\f2lusers\f1 which, of course, listed users currently using the TTY's.
+With the decline of mainframe-based systems,
+.B cs-status
+became a network-aware tool capable of allowing users from multiple
+front ends to track the connection status of backends hooked to a master
+terminal server.
+Probable culprits for the original
+.B cs-status
+are Bob Brown and Doug Comer.
+The current version (v2.0) has been dusted off and ported to Linux by
+Dennis Brylow and Chris Telfer.

@@ -1,80 +1,97 @@
-.TH ODT 1
+.TH cs-console 1
 .SH NAME
-odt \- connect user's terminal to a backend \s-2SUN's\s0 console
+cs-console \- connect user's terminal to a XINU backend console
 .SH SYNOPSIS
-.B odt
-[ option ] ...
+.B cs-console
+[
+.BR \-h
+]
+[
+.BR \-t
+]
+[
+.BR \-f
+]
+[
+.BI \-c " class"
+]
+[
+.BI \-s " server"
+]
+[
+.BI connection
+]
 .SH DESCRIPTION
-.I Odt
-connects a terminal on the SUN (or VAX)
-to a backend SUN's console line so the output
-of the backend SUN appears on the terminal screen and characters
+.I Cs-console
+connects a terminal on the frontend unix box 
+to a XINU backend console line such that the output
+of the backend appears on the terminal screen and characters
 typed at the 
-keyboard are sent to the backend SUN.
-\f2Odt\f1 sets the backend SUN's tty line to raw mode, and the SUN
-(or VAX) terminal to 
-cbreak mode.
-The connection can be broken by killing the odt process (e.g., by
-typing the interrupt character (e.g., CONTROL-C).
+keyboard are sent to the backend.
+\f2Cs-console\f1 sets the backend's tty line to raw mode, and the unix
+box terminal to 
+cbreak mode.  Under normal conditions, \f2Cs-console\f1 interracts with
+the monitor program on the XINU backends.
+The connection can be closed by escaping to the monitor, (CONTROL-@),
+and choosing the "q" option for "quit".
 .PP
-When \f2odt\f1 receives a backslash from the terminal,
-it switches to raw mode to read
-one character, after which it switches back to cbreak mode.
-The backslash escape allows the user to send characters like CONTROL-C
-to the backend SUN even though they are normally interpreted as signals.
-As a special case, an escaped null character (octal 0) causes \f2odt\f1
-to force the backend SUN line into a break condition for 1 second.
-This is useful for halting the processor and trapping to the SUN monitor
-program.
+The monitor contains commands for downloading kernels to the backend, 
+powercycling the backend, or sending a break character to the backend.
 .PP
 Options are:
 .TP
-.BI \-c "CLASS"
+.BI \-c " class"
 Class. Connect to a machine in the class
-.I CLASS
-if one is available.  The default class is SUN.  If the user
-already has a machine
-reserved in the class
-.I CLASS,
-then the reserved machine
-will be used. 
-If no machines are available in the specified class
-then a message to that effect will be printed.
+.I class
+if one is available.  The default class is i586.
+The value of
+.I class
+can also be set using the environment
+variable "CS_CLASS".
 .TP
-.BI \-m "MACH"
-Machine.
-Use the backend SUN named
-.I MACH
-if it is available.
-A user may now reserve two or more machines at once.  The first machine
-they reserve will not automatically be released like the original version
-of the software used to do.  Moreover,  the tty line and the user name are
-used to make a reservation.  This means that a user can odt to two
-different backend machines from two different
-windows on his workstation, and the reservation system will remember which
-window is associated with each backend.  If you want to odt to two
-different backends from the same window, then you must specify the desired
-backend each time, or the reservation system will automatically odt to
-the backend that you used most recently in that window.
-If machine
-.I MACH
-is unavailable, then a message to that effect will be printed.
+.BI \-s " server"
+Server. Uses the hostname or IP address
+.I server
+to communicate with the backend console terminal server daemon.
+(Also called the "cserver" daemon.)  By default,
+\f2cs-console\f1 will send out a broadcast request for the proper
+server on the current subnet.  This parameter should only be set if
+selecting between several available servers, or connecting to a server
+on another subnet.  The value of
+.I server
+can also be set using the colon-delimited environment variable
+"CS_SERVERS".
 .TP
-.BI \-v 
-Verbose.
-The verbose option will print messages indicating what the program is
-currently doing.
+.BI \-h
+Help.  Prints a short usage blurb.
+.TP
+.TP
+.BI \-t 
+Transparent mode.
+Don't use this if you don't already know what it is for.
+.TP
+.BI \-f
+Flush timeout.
+Deprecated under modern versions of \f2cs-console\f1.
 .SH "SEE ALSO"
-busers(1), download(1), odtunlock(1)
-.SH FILES
-.ta 1i
-/tmp/xinu/*   Local lock files.  Named by user's login id
-.ta 1i
-/usr/xinu/database/bedservers  List of BED servers if on
-.ta 1i
-                               on remote net
+cs-status(1)
 .SH BUGS
-Avoid suspending odt (CONTROL-Z) if possible since it will leave the
-terminal line in cbreak mode.
+On some systems, network broadcast search for cserver daemons will
+fail if the environment variable CS_SERVERS is set to a broadcast
+address, like "128.10.3.255".
+.SH HISTORY
+The exact lineage of
+.B cs-console
+is forever lost in the sands of time.
+The original ancestor of
+.B cs-console
+was called \f2odt\f1.  Believed to have first appeared circa 1978,
+\f2odt\f1 was named for the "Octal Debugging Tool" that standard
+DEC machines of that era had as the equivalent to modern boot PROMs.
+Original culprits for the XINU \f2odt\f1 tool were probably Bob Brown
+and Doug Comer.  Across the decades, this tool has appeared in many
+incarnations, allowing a wide variety of frontend architectures to 
+connect to a wide variety of backend consoles.
 
-
+The current incarnation (v2.0) has been dusted off and ported to
+Linux by Dennis Brylow and Chris Telfer.
