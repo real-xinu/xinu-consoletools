@@ -1,0 +1,35 @@
+							2002 Jan 14
+
+   This directory contains the source for the complete set of XINU Lab console tools.  This includes the client-side programs cs-console and cs-status, as well as the cserver daemon and all of its support utilities.
+
+   Contents:
+	build/		Makefiles.
+	cserver/	Source for cserver daemon.
+	hdr/		Headers shared between all the utilities.
+	lib/		Libraries (mostly networking calls) shared by all
+			the utilities.
+	man/		Man pages for many of the commands.  Some recent.
+			Some less recent.
+	programs/	Source for cs-* utilities.
+	reboot/		Completely unrelated set of source for communicating
+			with the terminal annex.  Supplies the be-reset
+			command used by the cserver daemon.
+	scripts/	Supporting scripts and wrappers.  Some recent.
+			Some less recent.
+
+INSTALLATION
+
+   Change directory to build/<arch>-<os>.  On Linux machines, type "make".
+On CS Department Solaris boxes, type "/usr/local/gnu/make".  All of the
+executables will be built in that directory.
+   The "install" clauses of the Makefiles are largely out of date.
+It's probably a lot easier to install by hand:
+
+	Copy cs-console and cs-status to /p/xinu/bin.
+	Copy all other executables to /p/xinu/sbin.
+	Check modes and ownerships on everything.  Latest installation has
+		0555 brylow:newxinu on /p/xinu/bin/*, and 
+		0555 root:newxinu on /p/xinu/sbin/*.
+	Cserver will look for config file in /p/xinu/etc, and logging
+		directory in /p/xinu/etc/conlog.
+	Man pages should be copied to /p/xinu/man/man1.

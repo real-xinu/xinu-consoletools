@@ -1,0 +1,23 @@
+							2002 Jan 14
+
+   This directory contains what we believe to be the complete set of
+source for communicating with the XINU Lab terminal annex.  Now that the
+backend console lines all run to a shiny, new, SCSI-bus annex, the only
+use for this code is to run the old rebooter.  As the new rebooter is
+being built even as I write this, we shouldn't need to keep this code
+around for much longer.
+   But that has been said about many pieces of software in the past, with
+widely varying degrees of accuracy.
+
+INSTALLATION
+
+   Change directory to libannex.  Run make.
+   Change directory to be-reset.  Run make.
+   Copy be-reset executable to /p/xinu/sbin, or whereever the cserver daemon
+currently expects to find it.
+
+NOTES
+
+   This code has NOT been ported to Linux yet, nor has it even been evaluated
+for potential portability.  It runs on the current Solaris server, and really
+should not be needed for much longer.
