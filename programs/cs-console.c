@@ -33,7 +33,7 @@ printusage( sb )
 		 "usage: %s [-t] [-f] [-c class] [-s server] [connection]\n",
 		 sb );
 	fprintf( stderr,
-		 "\t %s \"Millenium Edition\" v2.0\n", sb);
+		 "cs-console v2.0 \"Millenium Edition\"\n");
 	exit( 1 );
 }
 

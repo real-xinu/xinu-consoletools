@@ -89,7 +89,7 @@ printusage( sb )
 {
 	fprintf( stderr, "usage: %s [-b] [-f] [-c class] [-s server] [connection]\n", sb );
 	fprintf( stderr,
-		 "\t %s \"Millenium Edition\" v2.0\n", sb);
+		 "cs-status v2.0 \"Millenium Edition\"\n");
 	exit( 1 );
 }
 
