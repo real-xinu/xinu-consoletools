@@ -17,6 +17,13 @@
 #include <pwd.h>
 #include <signal.h>
 
+#ifdef WITH_LIBWRAP
+#include WITH_LIBWRAP
+extern int hosts_ctl();                 /* TCP wrappers.        */
+int allow_severity = 0;
+int deny_severity  = 0;
+#endif
+
 extern struct passwd * getpwuid();	/* get password entry	*/
 
 #include "cserver.h"
@@ -52,6 +59,10 @@ static int numconnections = 0;			/* number of connections*/
 static char hostname[ MAXHOSTNAME ];		/* name of this host	*/
 static char * exec_path = 0;			/* server path 		*/
 static char ** exec_args = 0;			/* server arguments	*/
+
+#ifdef WITH_LIBWRAP
+static char *progname;                          /* Name of this server. */
+#endif
 
 extern struct condata * readConfigurationFile();
 extern struct condata * getcondata();
@@ -130,6 +141,15 @@ main( argc, argv )
 	char * configurationFile = CS_CONFIGURATIONFILE;
 	char pwname[ 32 ];
 
+#ifdef WITH_LIBWRAP
+	/* Get the name we were invoked with, for TCP wrappers. */
+	progname = strrchr (argv[0], '/');
+	if (progname == (char *) NULL)
+	  progname = argv[0];
+	else
+	  progname++;
+#endif
+
 	umask( 0 );
 
 	pwname[ sizeof( pwname ) - 1 ] = '\0';
@@ -145,7 +165,7 @@ main( argc, argv )
 	}
 
 #ifdef CS_RUN_AS_ROOT
-	if( strequ( pwname, "muckel" ) ) {
+	if( strequ( pwname, "brylow" ) ) {
 		/* ok */
 	}
 	else if( ! strequ( pwname, "root" ) ) {
@@ -390,6 +410,20 @@ ProcessRequest ( psa, req )
 {
 	char mesg[ MAXMESG ];
 	struct condata * cdata;
+	int tcp_wrap_result;
+
+#ifdef WITH_LIBWRAP
+	/* Ask TCP wrappers if this source address is OK. */
+	tcp_wrap_result = hosts_ctl("cserver", STRING_UNKNOWN,
+				    inet_ntoa (psa->sin_addr), &req->user);
+	/* Nope.  Reject request without even responding. */
+	if (0 == tcp_wrap_result)
+	  {
+	    Log( "Rejecting connection from barred IP %s.\n",
+		 inet_ntoa (psa->sin_addr) );
+	    return;
+	  }
+#endif
 
 	mesg[ 0 ] = '\0';
 	if( req->version != CURVERSION ) {
