@@ -2,7 +2,7 @@
 #  Makefile for the distributed bed server and associated programs
 #
 
-DEFINES = -DSOLARIS
+DEFINES = -DSOLARIS -DWITH_LIBWRAP=\"/p/misc/include/tcpd.h\"
 
 include ../Tools.mk
 
@@ -11,6 +11,7 @@ LD := /usr/local/gnu/gcc
 RANLIB := /bin/echo
 
 LDFLAGS := $(LDFLAGS) -lsocket -lnsl
+LIBWRAPFLAGS := -L/p/misc/lib -lwrap
 
 include ../Makefile.mk
 
