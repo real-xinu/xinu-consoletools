@@ -4,9 +4,8 @@
 
 RANLIB = ranlib
 
-BINTYPE := $(shell /usr/local/bin/bintype -os)
-BINDIR := /u/u5/srg/$(BINTYPE)/bin
-ETCDIR := /u/u5/srg/$(BINTYPE)/etc/contools
+BINDIR := /p/xinu/bin
+ETCDIR := /p/xinu/etc/contools
 
 TOP = ../..
 
@@ -17,7 +16,7 @@ INCOPTS := $(patsubst %,-I%,$(INCDIRS))
 
 CPPFLAGS := $(DEFINES) $(INCOPTS) $(CPPFLAGS)
 CFLAGS := -g $(CFLAGS)
-LDFLAGS := -g $(LDFLAGS)
+LDFLAGS := $(LDFLAGS)
 
 VPATH := $(SRCDIRS)
 
@@ -25,8 +24,7 @@ LIB := lib.a
 
 PROGRAMS :=  $(basename $(notdir $(wildcard $(TOP)/programs/*.c)))
 
-# all: $(PROGRAMS) cserver
-all: $(PROGRAMS)
+all: $(PROGRAMS) cserver
 
 $(PROGRAMS): % : %.o $(LIB)
 	$(CC) $(LDFLAGS) -o $@ $@.o $(LIB)
@@ -42,7 +40,7 @@ SERVERSOURCES :=  $(notdir $(wildcard $(TOP)/cserver/*.c)) scanner.c
 SERVEROBJECTS := $(addsuffix .o, $(basename $(SERVERSOURCES)))
 
 cserver: $(LIB) $(SERVEROBJECTS)
-	$(LD) $(LDFLAGS) -o $@ $(SERVEROBJECTS) $(LIB) $(LIB) -ll
+	$(CC) $(LDFLAGS) -o $@ $(SERVEROBJECTS) $(LIB) -ll
 
 scanner.c: $(TOP)/cserver/scanner.l
 	$(LEX) -t $(TOP)/cserver/scanner.l > scanner.c
@@ -103,7 +101,11 @@ $(ETCDIR)/%: ../../scripts/%
 	@cp $^ $@
 	@chmod 555 $@
 
-install: $(BINPROGS) $(ETCPROGS)
+install: all
+	cp cs-console $(BINDIR)
+	cp cs-status  $(BINDIR)
+	chmod 0555 $(BINDIR)/cs-*
+
 
 #
 # Rule for building each of the libraries
