@@ -32,6 +32,8 @@ printusage( sb )
 	fprintf( stderr,
 		 "usage: %s [-t] [-f] [-c class] [-s server] [connection]\n",
 		 sb );
+	fprintf( stderr,
+		 "\t %s \"Millenium Edition\" v2.0\n", sb);
 	exit( 1 );
 }
 
@@ -247,6 +249,7 @@ handlebreak( devout )
 	printf( "\n\r" );
 	while( 1 ) {
 		printf( "\n\r(command-mode) " );
+		fflush(stdout);
 		if( getInput( & ch ) <= 0 ) {
 			printf( "\n\r" );
 			return( 0 );
