@@ -743,7 +743,9 @@ findDeadChildren()
 	}
 }
 
-extern char * sys_errlist[];
+#ifndef linux
+ extern char * sys_errlist[];
+#endif
 
 /*---------------------------------------------------------------------------
  * sendtoReply - send a reply struct in a UDP packet to a specific host
