@@ -1,0 +1,20 @@
+#!/bin/sh
+
+PATH="/bin:/usr/bin:/usr/ucb"
+
+if [ $# -lt 1 ]
+then
+  echo $0: missing arguments
+  exit 1
+fi
+
+cat - > $1  
+
+if [ $? -eq 0 ]
+then
+  ls -Flags $1
+  echo `basename $0` complete
+else
+  echo `basename $0` failed
+fi
+

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+PATH="/bin:/usr/bin:/usr/ucb"
+
+x10="/p/srg/etc/contools/x10"
+connect="/p/srg/bin/cs-console"
+
+if [ $# -lt 3 ]
+then
+  echo $0: missing arguments
+  exit 1
+fi
+
+name=$1
+house=$2
+unit=$3
+
+if [ $# -ge 4 ]
+then
+  $x10 p $house $unit | $connect -t -f -s $4 $name > /dev/null
+else
+  $x10 p $house $unit | $connect -t -f $name > /dev/null
+fi

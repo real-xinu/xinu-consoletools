@@ -1,0 +1,51 @@
+#! /bin/sh
+
+PATH="/bin:/usr/bin:/usr/ucb"
+
+contoolsdir=/p/srg/etc/contools
+
+#
+# find them
+#
+TEMP=/tmp/.murder.$$
+
+pattern="$contoolsdir/.*$"
+
+if [ -f /usr/local/bin/bintype ]
+then
+bt=`/usr/local/bin/bintype -os`
+else
+  bt=unknown
+fi
+
+pids=
+
+case $bt in
+  *-sos5)   ps -ef | grep -v $0 | egrep "[^:]*:[0-9][0-9] $pattern" > $TEMP
+	    pids=`cat $TEMP | sed -e 's/^[ ]*[^ ]*  *\([0-9]*\).*$/\1/g'`
+	    ;;
+  *-sos4|*) ps agxwww | grep -v $0 | egrep "[^:]*:[0-9][0-9] $pattern" > $TEMP
+	    pids=`cat $TEMP | sed -e 's/^[ ]*\([0-9]*\).*$/\1/g'`
+	    ;;
+esac
+
+if [ "$pids" = "" ]
+then
+  echo "No match"
+else
+#  cat $TEMP
+#  RESP=
+#  echo "Kill all? (y/n) [n]: "
+#  read RESP
+#  if [ "$RESP" = "y" ] || [ "$RESP" = "yes" ]
+#  then
+#    kill -INT $pids
+#  else
+#    echo aborted
+#  fi
+  kill -INT $pids
+fi
+
+rm -f $TEMP
+
+exit 0

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+PATH="/bin:/usr/bin:/usr/ucb"
+
+if [ $# -lt 1 ]
+then
+  echo $0: missing arguments
+  exit 1
+fi
+
+eval $*

@@ -1,0 +1,31 @@
+#!/bin/sh
+
+PATH="/bin:/usr/bin:/usr/ucb"
+
+if [ $# -lt 2 ]
+then
+  echo $0: missing arguments
+  exit 1
+fi
+
+cat - > /tmp/$1.out
+
+if [ $? -eq 0 ]
+then
+  echo received file: `ls -Flags /tmp/$1.out`
+else
+  echo download failed
+  exit 1
+fi
+
+echo rcp file to $1:$2
+
+rcp /tmp/$1.out $1:$2
+
+if [ $? -eq 0 ]
+then
+  rsh $1 /bin/ls -Flags $2
+  echo `basename $0` complete
+else
+  echo `basename $0` failed
+fi

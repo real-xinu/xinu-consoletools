@@ -1,0 +1,42 @@
+#!/bin/sh
+
+prog=/p/srg/etc/contools/`basename $0`
+
+b=""
+f=""
+args=
+for i in $*
+do
+  arg=$i
+  case $i in
+    -b)	b="-b"
+	;;
+    -B)	b="-B"
+	arg=-b
+	;;
+    -f)	f="-f"
+	;;
+    -F)	f="-F"
+	arg=-f
+	;;
+    *)
+       ;;
+  esac
+  args="$args $arg"
+done
+
+if [ "$b" = "" ] && [ "$f" = "" ]
+then
+  b="-b"
+  f="-f"
+fi
+
+if [ "$b" = "-b" ]
+then
+  $prog $args | egrep -v "DOWNLOAD|BREAK|POWERCYCLE"
+elif [ "$b" = "" ] && [ "$f" = "-f" ]
+then
+  $prog $args | sed -e 's/\<[^ 	]*-bk[ 	]*//g' -e 's/\<[^ 	]*-dl[ 	]*//g' -e 's/\<[^ 	]*-pc[ 	]*//g'
+else
+  $prog $args
+fi

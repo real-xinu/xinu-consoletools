@@ -1,0 +1,25 @@
+#!/bin/sh
+
+PATH="/bin:/usr/bin:/usr/ucb"
+
+configdir=/p/srg/etc/conconfig
+
+contoolsdir=/p/srg/etc/contools
+
+if [ ! -d $configdir ]
+then
+  exit 0
+fi
+
+#
+# start connection server
+#
+cserver=$contoolsdir/cserver
+
+if [ -f $cserver ]
+then
+  $cserver
+fi
+
+exit 0
+

@@ -1,0 +1,24 @@
+.TH CS\-STATUS 1
+.SH NAME
+cs\-status \- list connection servers and current status of connections
+.SH SYNOPSIS
+.B cs\-status [\-b] [\-f] [\-c class] [\-s server] [connection]
+.SH DESCRIPTION
+.I cs\-status
+displays information about each connection server that is running.
+This information includes the machine name the server is running on
+and the state of each of the server's connections.  For each
+connections the the name, class, login name of the user who currently
+has the connection reserved, and the time the connection was established
+can displayed.
+
+The options are used to control the information displayed.  If the \-b
+flag is used, the information about the connection's state will be displayed.
+If the \-f option is used, information about the connection server will be
+displayed.
+In the absence of both the \-f and \-b option, both the server and connection
+information will be displayed.  The \-c class and connection option limit
+the output to only those connections that corresponding fields match.
+The \-s server is used to limit the query to a specific connection server.
+.SH "SEE ALSO"
+cserver(1)
