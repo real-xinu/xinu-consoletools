@@ -1,210 +1,98 @@
-#include <stdio.h>
-#include <sgtty.h>
-#include <sys/ioctl.h>
-#ifndef CBREAK
-# ifndef linux
-#  include <sys/ttold.h>
-#  define CBREAK O_CBREAK
-# else
-#  include <rpcsvc/rex.h>
-#  ifndef tIOC
-#   define tIOC    ('t'<<8)
-#   define TIOCGETP        (tIOC|8)
-#   define TIOCSETP        (tIOC|9)
-#   define sg_flags flags
-#  endif
-# endif
-#endif
+ #include <termios.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <unistd.h>
 
-#ifdef HPPA
+/* you really probably only need 1 entry for saved tty, since there is only */
+/* one tty per process as far as I know.  But the older library assumed you */
+/* could have up to 20! 						    */
 
-#include <termios.h>
+#define NTTY	20
+struct termios savedttys[NTTY];
+int ttyissaved[NTTY];
 
-#endif
-
-#define initializedTTY()	( g_devsize > 0 )
-#define baddevice(dev)		( dev < 0 || dev >= g_devsize )
-
-static struct sgttyb * g_kttymode = NULL; /* keyboard mode upon entry 	*/
-static int * g_saved = NULL;
-static int * g_mode = NULL;
-static int g_devsize = 0;
-
-#define MODE_ORIG	0
-#define MODE_RAW	1
-#define MODE_CBREAK	2
-
-/*---------------------------------------------------------------------------
- * inittty - initialize global variables
- *---------------------------------------------------------------------------
- */
-static void
-inittty()
+void 
+initttys()
 {
-	int i;
-
-	if( g_devsize > 0 ) {
-		return;
-	}
-
-	g_devsize = getdtablesize();
-	
-	if( g_devsize <= 0 ) {
-		return;
-	}
-	g_saved = (int *) xmalloc( sizeof( int ) * g_devsize );
-	g_mode = (int *) xmalloc( sizeof( int ) * g_devsize );
-	g_kttymode = (struct sgttyb *) xmalloc( sizeof(struct sgttyb)
-						* g_devsize );
-	for( i = 0; i < g_devsize; i++ ) {
-		g_saved[ i ] = 0;
-		g_mode[ i ] = MODE_ORIG;
-	}
+  memset((void *)ttyissaved, 0, sizeof(ttyissaved));
 }
 
-/*---------------------------------------------------------------------------
- * savetty - save the state of the tty
- *---------------------------------------------------------------------------
- */
-static int
-savetty( dev )
-     int dev;
+void
+rawtty(
+   int fd)
 {
-	if( baddevice( dev ) ) {
-		return( -1 );
-	}
-	if( g_saved[ dev ] ) {
-		return( 0 );
-	}
-	if( ioctl( dev, TIOCGETP, & g_kttymode[ dev ] ) < 0 )  {
-		return( -1 );
-	}
-	g_saved[ dev ] = 1;
-	return( 0 );
+struct termios t;
+
+//  if ( ttysaved >= 0 )
+//    return;
+
+  if ( (fd < 0) || ( fd >= NTTY ) )
+    return;
+
+  if ( tcgetattr(fd, savedttys + fd) < 0 )
+    return; /* DIE? */
+
+  t = savedttys[fd]; 
+
+  t.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+  t.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+  t.c_cflag &= ~(CSIZE | PARENB);
+  t.c_cflag |= CS8;
+  t.c_oflag &= ~(OPOST);
+  t.c_cc[VMIN] = 1;
+  t.c_cc[VTIME] = 0;
+
+  if ( tcsetattr(fd, TCSAFLUSH, &t) < 0 )
+    return;		/* DIE? */
+  
+  ttyissaved[fd] = 1;
 }
 
-/*---------------------------------------------------------------------------
- * rawtty - place the tty line into raw mode
- *---------------------------------------------------------------------------
- */
-int
-rawtty( dev )
-     int dev;
-{
-	struct sgttyb cttymode;	/* changed keyboard mode	*/
-	
-	inittty();
 
-	if( baddevice( dev ) ) {
-		return( -1 );
-	}
-	if( g_mode[ dev ] == MODE_RAW ) {
-		return( 0 );
-	}
-	if( ! g_saved[ dev ] ) {
-		savetty( dev );
-	}
-	if( ! g_saved[ dev ] ) {
-		return( -1 );
-	}
-	cttymode = g_kttymode[dev];
-	cttymode.sg_flags |= RAW;
-	cttymode.sg_flags &= ~ECHO;
-	cttymode.sg_flags &= ~CRMOD;
-	if( ioctl( dev, TIOCSETP, & cttymode ) < 0 ) {
-		return( -1 );
-	}
-	g_mode[ dev ] = MODE_RAW;
-	return( 0 );
+void
+cbreakmode(
+   int fd)
+{
+struct termios t;
+
+//  if ( ttysaved >= 0 )
+//    return;
+
+  if ( (fd < 0) || ( fd >= NTTY ) )
+    return;
+
+  if ( tcgetattr(fd, savedttys + fd) < 0 )
+    return; /* DIE? */
+
+  t = savedttys[fd]; 
+
+  t.c_lflag &= ~(ECHO | ICANON);
+  t.c_cc[VMIN] = 1;
+  t.c_cc[VTIME] = 0;
+
+  if ( tcsetattr(fd, TCSAFLUSH, &t) < 0 )
+    return;		/* DIE? */
+  
+  ttyissaved[fd] = 1;
 }
 
-/*---------------------------------------------------------------------------
- * restoretty - restore the tty line to its original state
- *---------------------------------------------------------------------------
- */
-int
-restoretty( dev )
-     int dev;
-{
-	inittty();
 
-	if( baddevice( dev ) ) {
-		return( -1 );
-	}
-	if( g_mode[ dev ] == MODE_ORIG ) {
-		return( 0 );
-	}
-	if( ! g_saved[ dev ] ) {
-		return( -1 );
-	}
-	if( ioctl( dev, TIOCSETP, & g_kttymode[ dev ] ) < 0 ) {
-		return( -1 );
-	}
-	g_mode[ dev ] = MODE_ORIG;
-	return( 0 );
+/* run at beginning : atexit(tty_atexit); */
+void
+tty_atexit(void)
+{
+int i;
+  for ( i = 0 ; i < NTTY ; ++i )
+    restoretty(i);
 }
 
-/*---------------------------------------------------------------------------
- * rawtty - place the tty line into cbreak mode
- *---------------------------------------------------------------------------
- */
-int
-cbreakmode( dev )
-	int dev;
+
+void
+restoretty(
+   int fd)
 {
-#ifdef HPPA
-	struct termios kttymode;
-#else
-	struct sgttyb kttymode;
-#endif
+  if ( ttyissaved[fd] )
+    tcsetattr(fd, TCSAFLUSH, savedttys + fd);
 
-	inittty();
-
-	if( baddevice( dev ) ) {
-		return( -1 );
-	}
-	if( g_mode[ dev ] == MODE_CBREAK ) {
-		return( 0 );
-	}
-	if( ! g_saved[ dev ] ) {
-		savetty( dev );
-	}
-	if( ! g_saved[ dev ] ) {
-		return( -1 );
-	}
-
-#ifdef HPPA
-	if( tcgetattr( 0, & kttymode ) < 0 ) {
-#else
-	if( ioctl( 0, TIOCGETP, & kttymode ) < 0 ) {
-#endif
-		return( -1 );
-	}
-
-	/*
-         * set up local terminal in cbreak mode
-	 */
-#ifdef HPPA
-	kttymode.c_lflag &= ~ICANON;
-	kttymode.c_lflag &= ~ECHO;
-	kttymode.c_iflag &= ~ICRNL;
-	kttymode.c_oflag &= ~ONLCR;
-	kttymode.c_cc[VEOF] = 1; /* MIN */
-	kttymode.c_cc[VEOL] = 0; /* TIME */
-#else
-	kttymode.sg_flags |= CBREAK;
-	kttymode.sg_flags &= ~ECHO;
-	kttymode.sg_flags &= ~CRMOD;
-#endif
-
-#ifdef HPPA
-	if( tcsetattr( 0, & kttymode ) < 0 ) {
-#else
-	if( ioctl( 0, TIOCSETP, & kttymode) < 0 ) {
-#endif
-		return( -1 );
-	}
-
-	g_mode[ dev ] = MODE_CBREAK;
-	return( 0 );
+  ttyissaved[fd] = 0;
 }
