@@ -23,8 +23,8 @@ rawtty(
 {
 struct termios t;
 
-//  if ( ttysaved >= 0 )
-//    return;
+if ( ttyissaved[fd] )
+  return;
 
   if ( (fd < 0) || ( fd >= NTTY ) )
     return;
@@ -55,8 +55,8 @@ cbreakmode(
 {
 struct termios t;
 
-//  if ( ttysaved >= 0 )
-//    return;
+if ( ttyissaved[fd] )
+  return;
 
   if ( (fd < 0) || ( fd >= NTTY ) )
     return;
