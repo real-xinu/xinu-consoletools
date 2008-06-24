@@ -40,7 +40,7 @@ SERVERSOURCES :=  $(notdir $(wildcard $(TOP)/cserver/*.c)) scanner.c
 SERVEROBJECTS := $(addsuffix .o, $(basename $(SERVERSOURCES)))
 
 cserver: $(LIB) $(SERVEROBJECTS)
-	$(CC) $(LDFLAGS) -o $@ $(SERVEROBJECTS) $(LIB) -ll
+	$(CC) $(LDFLAGS) -o $@ $(SERVEROBJECTS) $(LIB) -lfl
 
 scanner.c: $(TOP)/cserver/scanner.l
 	$(LEX) -t $(TOP)/cserver/scanner.l > scanner.c
