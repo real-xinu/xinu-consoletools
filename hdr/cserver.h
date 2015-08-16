@@ -5,6 +5,11 @@
 #ifndef __cserver_h__
 #define __cserver_h__
 
+#include <string.h>
+#include <strings.h>
+#include <stdlib.h>
+#include <unistd.h>
+
 /* configuration database name */
 #define CS_CONFIGURATIONFILE	"/p/xinu/etc/connections.config"
     
@@ -21,17 +26,17 @@
 #define CS_RUN_AS_ROOT
 
 /* domain name (optional) */
-#define DOMAINNAME "purdue.edu"
+#define DOMAINNAME "cs.purdue.edu"
 
 /* Parameters */
 /* maximum reservation time in minutes (optional) */
 #define RESERVETIME		10
 
 /* maximum number of servers */
-#define MAXSERVERS		128
+#define MAXSERVERS		256
 
 /* default class name when making a connection */
-#define DEFAULTCLASSNAME 	"i586"
+#define DEFAULTCLASSNAME 	"quark"
 
 /* Environment Variables */
 
@@ -43,7 +48,7 @@
 
 /* size constants for data names */
 #define MAXHOSTNAME	64		/* max machine name length	*/
-#define MAXCONNECTIONS	512		/* max number of connections	*/
+#define MAXCONNECTIONS	2048		/* max number of connections	*/
 #define MAXUSERNAME	16		/* max user id length		*/
 #define MAXCONNECTIONNAME 16		/* max connection name length	*/
 #define MAXCLASSNAME	16		/* len of class string		*/
