@@ -1,6 +1,5 @@
 #include <stdio.h>
-
-extern char * malloc();
+#include <stdlib.h>
 
 /*---------------------------------------------------------------------------
  * xmalloc - test return value on malloc

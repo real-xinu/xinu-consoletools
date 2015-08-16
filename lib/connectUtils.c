@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <netdb.h>
 #include <errno.h>
+#include <string.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,10 +13,6 @@
 #include "timeout.h"
 
 extern char * getuser();
-
-#ifndef linux
-extern char * sys_errlist[];
-#endif
 
 /*---------------------------------------------------------------------------
  * recvfromReply - receive a reply structure from a specified host
@@ -73,7 +70,7 @@ recvfromReply( s, from, timeout, reply )
 				 0, (struct sockaddr *) from,
 				 & fromlen ) ) <= 0 ) {
 		fprintf( stderr, "can't receive reply: %s\n",
-			sys_errlist[ errno ] );
+			strerror( errno ) );
 		return( -1 );
 	}
 
@@ -179,7 +176,7 @@ sendtoRequest( s, to, req )
 	if( sendto( s, (char *) req, sizeof( struct request ), 0,
 		    (struct sockaddr *)to, sizeof( struct sockaddr ) ) <= 0 ) {
 		fprintf( stderr, "can't sendto request: %s\n",
-		     sys_errlist[ errno ] );
+		     strerror( errno ) );
 		return( -1 );
 	}
 	return( sizeof( struct request ) );
@@ -192,7 +189,7 @@ sendRequest( s, req )
 {
 	if( send( s, (char *) req, sizeof( struct request ), 0 ) <= 0 ) {
 		fprintf( stderr, "can't send request: %s\n",
-			sys_errlist[ errno ] );
+			strerror( errno ) );
 		return( -1 );
 	}
 	return( sizeof( struct request ) );

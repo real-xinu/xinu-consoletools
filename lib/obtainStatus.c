@@ -99,9 +99,8 @@ fakemulticast( servers, numservers, sock, req )
 		}
 		sa.sin_family = AF_INET;
 		sa.sin_port   = htons( CS_PORT );
-		if( ( addr = inet_addr( servers[ i ] ) ) != -1 ) {
-			bcopy( (char *) &addr, (char *) &sa.sin_addr,
-			      sizeof( unsigned long ) );
+		if( inet_aton( servers[ i ], &sa.sin_addr ) > 0 ) {
+			/* null */
 		}
 		else if( ( phent = gethostbyname( servers[ i ] ) ) != NULL ) {
 			bcopy( phent->h_addr, (char *) & sa.sin_addr,

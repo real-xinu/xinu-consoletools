@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <assert.h>
 #include <netdb.h>
+#include <strings.h>
+#include <string.h>
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -23,10 +25,6 @@ struct	in_addr inet_makeaddr();
 
 #ifndef INADDR_NONE
 #define INADDR_NONE 0xffffffff
-#endif
-
-#ifndef linux
-extern char * sys_errlist[];
 #endif
 
 extern u_long inet_addr();
@@ -118,7 +116,7 @@ acceptTCP( s )
 	len = sizeof( struct sockaddr_in ); 
 	if( ( nc = accept( s, (struct sockaddr *) & sin, & len ) ) < 0 ) {
 		fprintf( stderr, "can't accept new connection: %s\n",
-		    sys_errlist[ errno ] );
+		    strerror( errno ) );
 		return( -1 );
 	}
 	return( nc );
@@ -192,13 +190,13 @@ connectsock( host, service, protocol )
 
 	/* Allocate a socket */
 	if( ( s = socket( PF_INET, type, ppe->p_proto ) ) < 0 ) {
-		fprintf( stderr,"connectsock(%s, %d, %s): can't get create socket: %s\n", host, service, protocol, sys_errlist[ errno ] );
+		fprintf( stderr,"connectsock(%s, %d, %s): can't get create socket: %s\n", host, service, protocol, strerror( errno ) );
 		return( -1 );
 	}
 
 	/* Connect the socket */
 	if( connect( s, (struct sockaddr *)&sin, sizeof( sin ) ) < 0 ) {
-		fprintf( stderr,"connectsock(%s, %d, %s): can't connect to port: %s\n", host, service, protocol, sys_errlist[ errno ] );
+		fprintf( stderr,"connectsock(%s, %d, %s): can't connect to port: %s\n", host, service, protocol, strerror( errno ) );
 		return( -1 );
 	}
 	return( s );
@@ -241,17 +239,17 @@ passivesock( service, protocol, qlen )
 	/* Allocate a socket */
 	s = socket( PF_INET, type, ppe->p_proto );
 	if( s < 0 ) {
-		fprintf( stderr, "passivesock(%d, %s, %d): can't create socket: %s\n", service, protocol, qlen, sys_errlist[ errno ] );
+		fprintf( stderr, "passivesock(%d, %s, %d): can't create socket: %s\n", service, protocol, qlen, strerror( errno ) );
 		return( -1 );
 	}
 
 	/* Bind the socket */
 	if( bind( s, (struct sockaddr *)&sin, sizeof( sin ) ) < 0 ) {
-		fprintf( stderr, "passivesock(%d, %s, %d): can't bind to port: %s\n", service, protocol, qlen, sys_errlist[ errno ] );
+		fprintf( stderr, "passivesock(%d, %s, %d): can't bind to port: %s\n", service, protocol, qlen, strerror( errno ) );
 		return( -1 );
 	}
 	if( type == SOCK_STREAM && ( listen( s, qlen ) < 0 ) ) {
-		fprintf( stderr, "passivesock(%d, %s, %d): can't listen on port: %s\n", service, protocol, qlen, sys_errlist[ errno ] );
+		fprintf( stderr, "passivesock(%d, %s, %d): can't listen on port: %s\n", service, protocol, qlen, strerror( errno ) );
 		return( -1 );
 	}
 	return( s );
@@ -321,7 +319,7 @@ bcastUDP( s, buf, len , port )
 	/* set socket options so we can broadcast the IP addr back */
 	if( setsockopt( s , SOL_SOCKET , SO_BROADCAST ,
 			(char *) & on , sizeof( on ) ) < 0 ) {
-		fprintf( stderr, "broadcast failed setting socket options: %s\n", sys_errlist[ errno ] );
+		fprintf( stderr, "broadcast failed setting socket options: %s\n", strerror( errno ) );
 		return( -1 );
 	}
 	nets = bnets( addrs, s );
@@ -338,7 +336,7 @@ bcastUDP( s, buf, len , port )
 		if( sendto( s, buf, len, 0, (struct sockaddr *) & baddr,
 			    sizeof( struct sockaddr_in ) ) != len ) {
 			fprintf( stderr, "broadcast failed: %s\n",
-				sys_errlist[ errno ] );
+				strerror( errno ) );
 			return( -1 );
 		}
 	}
