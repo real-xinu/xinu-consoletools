@@ -1,6 +1,6 @@
 #include <ctype.h>
 #include <stdio.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 unsigned char House[] = {
 	0x60 /*A*/, 0xe0 /*B*/, 0x20 /*C*/, 0xa0 /*D*/,

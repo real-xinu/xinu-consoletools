@@ -20,6 +20,7 @@ MERCHANTIBILITY AND FITNESS FOR ANY PARTICULAR PURPOSE. */
 
 #include <stdio.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #ifdef HPPA
 

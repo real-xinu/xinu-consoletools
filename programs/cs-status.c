@@ -6,6 +6,10 @@
 
 #include "cserver.h"
 
+static char class[ MAXCLASSNAME ];
+static char host[ MAXHOSTNAME ];
+static char connection[ MAXCONNECTIONNAME ];
+
 main( argc, argv )
     int argc;
     char * argv[];
@@ -13,9 +17,6 @@ main( argc, argv )
 	int sock;
 	int fflag = 0;
 	int bflag = 0;
-	char class[ MAXCLASSNAME ];
-	char host[ MAXHOSTNAME ];
-	char connection[ MAXCONNECTIONNAME ];
 	int i;
 
 	host[ 0 ] = '\0';

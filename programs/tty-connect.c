@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <errno.h>
 #include <signal.h>
+#include <stdlib.h>
 
 #ifdef DEC
 
