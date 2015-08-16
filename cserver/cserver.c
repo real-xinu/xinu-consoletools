@@ -16,6 +16,7 @@
 #include <sys/fcntl.h>
 #include <pwd.h>
 #include <signal.h>
+#include <string.h>
 
 #ifdef WITH_LIBWRAP
 #include WITH_LIBWRAP
@@ -198,7 +199,7 @@ main( argc, argv )
 		}
 	}
 	else {
-		int groups[ NGROUPS ];
+		gid_t groups[ NGROUPS ];
 		int ngroups, i;
 		struct group * gent;
 		
@@ -777,10 +778,6 @@ findDeadChildren()
 	}
 }
 
-#ifndef linux
- extern char * sys_errlist[];
-#endif
-
 /*---------------------------------------------------------------------------
  * sendtoReply - send a reply struct in a UDP packet to a specific host
  *---------------------------------------------------------------------------
@@ -800,7 +797,7 @@ sendtoReply( s, to, reply, len )
 	
 	if( sendto( s, (char *) reply, len, 0,
 		    (struct sockaddr *)to, sizeof( struct sockaddr ) ) <= 0 ) {
-		FLog( stderr, "can't sendto reply: %s", sys_errlist[ errno ] );
+		FLog( stderr, "can't sendto reply: %s", strerror( errno ) );
 		return( -1 );
 	}
 	return( rv );
@@ -827,7 +824,7 @@ recvfromRequest( s, from, timeout, req )
 	if( ( status = recvfrom( s, (char *) req, sizeof( struct request ), 0,
 				 (struct sockaddr *)from, &fromlen ) ) <= 0 ) {
 		FLog( stderr, "can't receive request: %s",
-		      sys_errlist[ errno ] );
+		      strerror( errno ) );
 		return( -1 );
 	}
 	

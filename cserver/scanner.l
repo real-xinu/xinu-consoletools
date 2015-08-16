@@ -5,6 +5,8 @@
  * Steve Chapin, 13 Apr 1988
  */
 #include <stdio.h>
+#include <string.h>
+#include <strings.h>
 
 #include "tokens.h"
 

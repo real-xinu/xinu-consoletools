@@ -4,8 +4,10 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <sys/time.h>
+#include <time.h>
 #include <sys/file.h>
+#include <string.h>
+#include <strings.h>
 
 /*---------------------------------------------------------------------------
  * TimeToSb - return pointer to current time string
