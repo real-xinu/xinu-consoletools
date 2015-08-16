@@ -2,16 +2,14 @@
 #  Makefile for the distributed bed server and associated programs
 #
 
-DEFINES = -DSOLARIS -DWITH_LIBWRAP=\"/p/misc/include/tcpd.h\"
+DEFINES = -DSOLARIS -DWITH_LIBWRAP=\"/opt/csw/include/tcpd.h\"
 
 include ../Tools.mk
 
-CC := /usr/local/gnu/gcc
-LD := /usr/local/gnu/gcc
-RANLIB := /bin/echo
+CC := gcc
 
 LDFLAGS := $(LDFLAGS) -lsocket -lnsl
-LIBWRAPFLAGS := -L/p/misc/lib -lwrap
+LIBWRAPFLAGS := -L/opt/csw/lib -lwrap
 
 include ../Makefile.mk
 
@@ -52,7 +50,6 @@ telnet-connect.o: ../../programs/telnet-connect.c
 tty-connect.o: ../../programs/tty-connect.c
 ttymode.o: ../../lib/ttymode.c
 ttyutils.o: ../../lib/ttyutils.c
-utils.o: ../../lib/utils.c
 x10.o: ../../programs/x10.c
 xmalloc.o: ../../lib/xmalloc.c
 
