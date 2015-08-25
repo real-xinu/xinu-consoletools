@@ -6,6 +6,8 @@
 
 #include "cserver.h"
 
+extern char * getdfltClass();
+
 static char class[ MAXCLASSNAME ];
 static char host[ MAXHOSTNAME ];
 static char connection[ MAXCONNECTIONNAME ];
@@ -68,8 +70,11 @@ main( argc, argv )
 		fflag = bflag = 1;
 	}
 
+	if (class[0] == '\0') {
+	    strncpy( class, getdfltClass( class, connection ), MAXCLASSNAME );
+	}
 	if( ( sock = statusrequest( connection, 
-				    getdfltClass( class, connection ), 
+				    class,
 				    host ) ) < 0 ) 
 	  {
 	    exit( 1 );
