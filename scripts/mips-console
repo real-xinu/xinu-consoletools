@@ -1,0 +1,79 @@
+#!/usr/bin/expect -f
+
+# Expect script for uploading Embedded Xinu to various mips routers.
+# Brylow 2008, 2009.
+# Tuned for Purdue use, it can automatically select an available backend. 
+# Cheng Cheng, Oct. 2011
+# Adjusted pattern for Weeder board rebooter ("-re .L.500" instead of "on.")
+# Daniel Trinkle, 24 July 2013
+
+set timeout -1
+set argc [llength $argv]
+
+if {$argc > 1} {
+  puts "$argc, $argv"
+  puts "usage: mips-console [backend]"
+  exit
+}
+
+if {$argc == 1} {
+  set backend $argv
+  set spawned [spawn cs-console -c mips $argv]
+} else {
+  set backend null
+  set spawned [spawn cs-console -c mips]
+}
+
+expect {
+        "error: connection not available" 
+                { send_user "error: connection not available\r\n"
+                  exit }
+        -re "connection '(.*)', class '(.*)', host '(.*)'\r\n"
+                { set backend $expect_out(1,string)
+                  set class   $expect_out(2,string)
+                  set host    $expect_out(3,string)
+                # send_user "connection $backend, class $class, host $host\r\n"
+                }
+}
+sleep 1
+send -null 1
+
+expect "(command-mode) "
+send -- "d"
+
+expect "file: "
+send -- "xinu.boot\r"
+
+expect {
+        "download complete\r\n"
+                { }
+        "No such file or directory" 
+                { send_user "No such file: xinu.boot\r\n"
+                  exit }
+}
+sleep 1
+send -null 1
+
+expect "(command-mode)"
+send -- "p"
+expect -re ".L.500"
+
+expect {
+        "ar7100>" { set router 160nl }
+        -re ".*\r\n"    { send "\003"
+                          exp_continue }
+}
+
+send -- "setenv autostart yes\r"
+sleep 1
+expect "ar7100>"
+send -- "bootp 0x81000000\r"
+#sleep 1
+
+#expect "Bytes transferred"
+#sleep 1
+#expect "ar7100>"
+#send -- "bootm\r"
+
+expect -- "Starting kernel"
+interact
