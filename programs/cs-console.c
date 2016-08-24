@@ -25,6 +25,11 @@ static int getInputString();
 
 static char * prog = 0;
 
+/* Values passed to tell subconnect which file to use	*/
+#define NO_FILE_NEEDED		0
+#define GET_FILE_FROM_USER	1
+#define USE_DEFAULT_FILE	2
+
 static
 printusage( sb )
      char * sb;
@@ -260,6 +265,7 @@ handlebreak( devout )
 			printf( "c\t: continue session\n\r" );
 			printf( "z\t: suspend\n\r" );
 			printf( "d\t: download image\n\r" );
+			printf( "D\t: download default image (xinu) and powercycle backend\n\r" );
 			printf( "p\t: powercycle backend\n\r" );
 			printf( "s\t: spawn a program\n\r" );
 			printf( "q, ^D\t: quit\n\r" );
@@ -296,17 +302,29 @@ handlebreak( devout )
 		case 'd':
 			restoreTTY();
 			if( subconnect( connection, "DOWNLOAD", "-dl", host,
-					1 ) == 0 ) {
+					GET_FILE_FROM_USER ) == 0 ) {
 				setTTY();
 				return( 1 );
 			}
 			setTTY();
 			break;
+
+		case 'D':
+			restoreTTY();
+			if( subconnect( connection, "DOWNLOAD", "-dl", host,
+					USE_DEFAULT_FILE ) != 0 ) {
+				setTTY();
+				break;
+			}
+			setTTY();
+			
+			/* Successful download of default file		*/
+			/*	"fall through" to power cycle		*/
 			
 		case 'p':
 			restoreTTY();
 			if( subconnect( connection, "POWERCYCLE", "-pc", host,
-					0 ) == 0 ) {
+					NO_FILE_NEEDED ) == 0 ) {
 				setTTY();
 				return( 1 );
 			}
@@ -370,7 +388,7 @@ static int getFilename( last, env, def_file )
 
 #define ENVFILENAME	"CS_FILENAME"
 
-#define DEFAULTFILENAME	"a.out"
+#define DEFAULTFILENAME	"xinu"
 
 int
 subconnect( connection, class, connection_ext, host, getfile )
@@ -381,7 +399,7 @@ subconnect( connection, class, connection_ext, host, getfile )
 	int status;
 	char * file = 0;
 	
-	if( getfile ) {
+	if( getfile == GET_FILE_FROM_USER ) {
 		static char last[ MAXFILENAME ];
 		static int init = 0;
 
@@ -395,6 +413,8 @@ subconnect( connection, class, connection_ext, host, getfile )
 		}
 
 		file = last;
+	} else if( getfile == USE_DEFAULT_FILE) {
+		file = DEFAULTFILENAME;
 	}
 			
 	if( ( childpid = fork() ) == 0 ) {
@@ -407,8 +427,10 @@ subconnect( connection, class, connection_ext, host, getfile )
 
 		sprintf( con, "%s%s", connection, connection_ext );
 
-		if( getfile ) {
+		if( getfile != NO_FILE_NEEDED ) {
 			int fd;
+
+			printf("Using file: %s\n", file);
 			
 			if( ( fd = open( file, O_RDONLY ) ) < 0 ) {
 				perror( "open()" );
