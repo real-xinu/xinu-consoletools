@@ -79,7 +79,7 @@ main( argc, argv )
 	if (class[0] == '\0') {
 	    strncpy( class, getdfltClass( class, connection ), MAXCLASSNAME );
 	}
-	if ( strcmp(class, "all") == 0 ) {
+	if ( strequ(class, "all") ) {
 	    class[ 0 ] = '\0';
 	    class[ MAXCLASSNAME - 1 ] = '\0';
 	}
@@ -156,8 +156,8 @@ printstatus( reply, fflag, bflag )
 	for( i = 0; i < numc; i++, stat++ ) {
 
 		/* Ignore DOWNLOAD and POWERCYCLE classes */
-		if( strcmp(stat->conclass, "DOWNLOAD") == 0 ||
-		    strcmp(stat->conclass, "POWERCYCLE") == 0) {
+		if( strequ ( stat->conclass, "DOWNLOAD") ||
+		    strequ ( stat->conclass, "POWERCYCLE") ) {
 			continue;
 		}
 
