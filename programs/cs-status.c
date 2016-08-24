@@ -79,6 +79,10 @@ main( argc, argv )
 	if (class[0] == '\0') {
 	    strncpy( class, getdfltClass( class, connection ), MAXCLASSNAME );
 	}
+	if ( strcmp(class, "all") == 0 ) {
+	    class[ 0 ] = '\0';
+	    class[ MAXCLASSNAME - 1 ] = '\0';
+	}
 	if( ( sock = statusrequest( connection, 
 				    class,
 				    host ) ) < 0 ) 
@@ -98,7 +102,7 @@ main( argc, argv )
 printusage( sb )
      char * sb;
 {
-	fprintf( stderr, "usage: %s [-b] [-f] [-c class] [-s server] [connection]\n", sb );
+	fprintf( stderr, "usage: %s [-b] [-f] [-a] [-c class] [-s server] [connection]\n", sb );
 	fprintf( stderr,
 		 "cs-status v2.0 \"Millenium Edition\"\n");
 	exit( 1 );
@@ -150,6 +154,13 @@ printstatus( reply, fflag, bflag )
 	numc = atoi( reply->numconnections );
 	stat = (struct statusreplyData *) ( reply->details );
 	for( i = 0; i < numc; i++, stat++ ) {
+
+		/* Ignore DOWNLOAD and POWERCYCLE classes */
+		if( strcmp(stat->conclass, "DOWNLOAD") == 0 ||
+		    strcmp(stat->conclass, "POWERCYCLE") == 0) {
+			continue;
+		}
+
 		if( bflag ) {
 			if( fflag ) {
 				printf( "    " );
