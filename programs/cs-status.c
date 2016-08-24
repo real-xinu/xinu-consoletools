@@ -22,11 +22,13 @@ main( argc, argv )
 	int i;
 
 	host[ 0 ] = '\0';
-	host[ MAXHOSTNAME ] = '\0';
+	host[ MAXHOSTNAME - 1 ] = '\0';
 	connection[ 0 ] = '\0';
 	connection[ MAXCONNECTIONNAME - 1 ] = '\0';
 	class[ 0 ] = '\0';
 	class[ MAXCLASSNAME - 1 ] = '\0';
+
+	strncpy( host, DEFAULTSERVERNAME, MAXHOSTNAME - 1 );
 
 	for( i = 1; i < argc; i++ ) {
 		if( strequ( argv[ i ], "-h" ) ) {
@@ -55,6 +57,10 @@ main( argc, argv )
 				printusage( argv[ 0 ] );
 			}
 			strncpy( host, argv[ i ], MAXHOSTNAME - 1 );
+		}
+		else if( strequ( argv[ i ], "-a") ) {
+			host[ 0 ] = '\0';
+			host[ MAXHOSTNAME - 1 ] = '\0';
 		}
 		else if( argv[ i ][ 0 ] == '-' ) {
 			fprintf( stderr, "error: unexpected argument '%s'\n",
