@@ -8,6 +8,13 @@
 
 extern char * getdfltClass();
 
+/* classes to ignore when -c ALL is specified */
+static char * class_ignore_list_ALL[] = { "DOWNLOAD", "POWERCYCLE", NULL };
+
+/* classes to ignore for all other specified classes */
+static char * class_ignore_list[] = { "DOWNLOAD", "POWERCYCLE", "tquark", "quark-l", NULL };
+
+
 static char class[ MAXCLASSNAME ];
 static char host[ MAXHOSTNAME ];
 static char connection[ MAXCONNECTIONNAME ];
@@ -20,6 +27,7 @@ main( argc, argv )
 	int fflag = 0;
 	int bflag = 0;
 	int i;
+	char** ignore_list = class_ignore_list;
 
 	host[ 0 ] = '\0';
 	host[ MAXHOSTNAME - 1 ] = '\0';
@@ -83,6 +91,11 @@ main( argc, argv )
 	    class[ 0 ] = '\0';
 	    class[ MAXCLASSNAME - 1 ] = '\0';
 	}
+	if ( strequ(class, "ALL") ) {
+	    class[ 0 ] = '\0';
+	    class[ MAXCLASSNAME - 1 ] = '\0';
+	    ignore_list = class_ignore_list_ALL;
+	}
 	if( ( sock = statusrequest( connection, 
 				    class,
 				    host ) ) < 0 ) 
@@ -94,7 +107,7 @@ main( argc, argv )
 		if( statusrecv( sock, & reply ) < 0 ) {
 			break;
 		}
-		printstatus( & reply, fflag, bflag );
+		printstatus( & reply, fflag, bflag, ignore_list );
 	}
 	exit( 0 );
 }
@@ -134,14 +147,17 @@ printName( sb )
  * printstatus - print the status message recieved
  *---------------------------------------------------------------------------
  */
-printstatus( reply, fflag, bflag )
+printstatus( reply, fflag, bflag, ignore_list )
      struct reply * reply;
      int fflag;
      int bflag;
+     char** ignore_list;
 {
 	struct statusreplyData * stat;
 	int i;
 	int numc;
+	int igidx;
+	int ignore_entry;
 	
 	if( fflag ) {
 		printName( reply->hostname );
@@ -155,12 +171,21 @@ printstatus( reply, fflag, bflag )
 	stat = (struct statusreplyData *) ( reply->details );
 	for( i = 0; i < numc; i++, stat++ ) {
 
-		/* Ignore DOWNLOAD and POWERCYCLE classes */
-		if( strequ ( stat->conclass, "DOWNLOAD") ||
-		    strequ ( stat->conclass, "POWERCYCLE") ) {
-			continue;
+		if( ignore_list ) {
+			igidx = 0;
+			ignore_entry = 0;
+			while(ignore_list[igidx] != NULL) {
+				if( strequ ( stat->conclass, ignore_list[igidx] ) ) {
+					ignore_entry = 1;
+					break;
+				}
+				igidx++;
+			}
+			if( ignore_entry ) {
+				continue;
+			}
 		}
-
+		
 		if( bflag ) {
 			if( fflag ) {
 				printf( "    " );
