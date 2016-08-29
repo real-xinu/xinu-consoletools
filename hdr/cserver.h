@@ -38,6 +38,9 @@
 /* default class name when making a connection */
 #define DEFAULTCLASSNAME 	"quark"
 
+/* default server name */
+#define DEFAULTSERVERNAME 	"xinuserver.cs.purdue.edu"
+
 /* Environment Variables */
 
 /* default class name - overrides built-in default (optional) */
