@@ -265,7 +265,7 @@ handlebreak( devout )
 			printf( "c\t: continue session\n\r" );
 			printf( "z\t: suspend\n\r" );
 			printf( "d\t: download image\n\r" );
-			printf( "D\t: download default image (xinu) and powercycle backend\n\r" );
+			printf( "g\t: download default image (xinu) and powercycle backend\n\r" );
 			printf( "p\t: powercycle backend\n\r" );
 			printf( "s\t: spawn a program\n\r" );
 			printf( "q, ^D\t: quit\n\r" );
@@ -309,7 +309,7 @@ handlebreak( devout )
 			setTTY();
 			break;
 
-		case 'D':
+		case 'g':
 			restoreTTY();
 			if( subconnect( connection, "DOWNLOAD", "-dl", host,
 					USE_DEFAULT_FILE ) != 0 ) {
