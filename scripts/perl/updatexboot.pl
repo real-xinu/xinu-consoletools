@@ -1,4 +1,5 @@
-#!/usr/bin/perl -I$HOME/xinuscripts
+#!/usr/bin/perl 
+use lib '$ENV{HOME}/xinu-consoletools/scripts/perl';
 
 use strict;
 
@@ -39,10 +40,8 @@ if($specific_backend ne "") {
 	}
 }
 
-exit;
-
 for(@backends) {
-	my $backend = new XINUBackend("quark", "/homes/lembkej/", "galileo102");
+	my $backend = new XINUBackend($backend_type, $ENV{'HOME'}, $_);
 	$backend->send_files_to_linux(
 		[$xboot_file],
 		["/media/mmcblk0p1/xboot"],
