@@ -36,6 +36,7 @@ sub new {
 		'backend_type' => $backend_type,
 		'default_timeout' => 10,
 		'default_key_delay' => 0.15,
+		'default_max_wait' => 60,
 		'retries' => 3,
 		'target_directory' => $target_directory,
 		'backend_name' => $backend_name
@@ -50,6 +51,14 @@ sub set_timeout {
 	my $timeout = shift;
 	my $old_val = $self->{'timeout'};
 	$self->{'timeout'} = $timeout;
+	return $old_val;
+}
+
+sub set_max_wait {
+	my $self = shift;
+	my $max_wait = shift;
+	my $old_val = $self->{'max_wait'};
+	$self->{'max_wait'} = $max_wait;
 	return $old_val;
 }
 
@@ -257,9 +266,9 @@ sub run_images {
 		unless($results_file =~ /^\//) {
 			$results_path = $self->{'target_directory'} . "/$results_path"
 		}
-		if(-e $results_path) {
-			_munlink($results_path);
-		}	
+		#if(-e $results_path) {
+		#	_munlink($results_path);
+		#}	
 		open $results_handle, ">>", $results_path or die "Unable to open $results_path: $!\n";
 		_print_msg("run_images :: Results printing to $results_path\n");
 	} else {
@@ -521,7 +530,15 @@ sub _read_and_format_data {
 		$timeout = $self->{'timeout'};
 	}
 
-	_print_msg("Using timeout: $timeout\n");
+	my $max_wait = $self->{'default_max_wait'};
+	if(defined($self->{'max_wait'})) {
+		$max_wait = $self->{'max_wait'};
+	}
+
+	_print_msg("Using timeout: $timeout sec\n");
+	_print_msg("Using max wait: $max_wait sec\n");
+
+	my $start_time = time;
 
 	my $keep_reading = 1;
 	while($keep_reading == 1) {
@@ -532,6 +549,11 @@ sub _read_and_format_data {
 		if((length $results) > $prev_length) {
 			$prev_length = length $results;
 			$keep_reading = 1;
+		}
+
+		if((time - $start_time) > $max_wait) {
+			_print_msg("Max wait time exceeded\n");
+			$keep_reading = 0;
 		}
 	}
 

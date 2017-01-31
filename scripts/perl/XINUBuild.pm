@@ -8,7 +8,7 @@ use File::Path;
 use Cwd;
 use IPC::Open3;
 
-use constant VERBOSE => 1;
+use constant VERBOSE => 0;
 
 if(VERBOSE) {
 	$| = 1;
