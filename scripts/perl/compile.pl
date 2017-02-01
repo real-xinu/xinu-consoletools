@@ -18,6 +18,7 @@ my $script_name = basename($0);
 
 my $user_home = $ENV{'HOME'};
 my $course_home = "/homes/cs503";
+#my $submit_path = "$course_home/submit/$submit_name";
 my $submit_path = "$user_home/submit/$submit_name";
 #my $compile_path = "$course_home/grading/$submit_name\_grading";
 my $compile_path = "$user_home/cs503/$submit_name\_grading/compile";
@@ -121,7 +122,7 @@ sub extract {
 
 	if(-e $compile_dir) {
 		print "$compile_dir already exists\n";
-		return;
+		return $compile_dir;
 	}
 	system("mkdir -p $compile_dir") == 0 or die "Unable to make target compile directory: $?\n";
 	system($extract_cmd) == 0 or die "Unable to extract student submission: $?\n";
