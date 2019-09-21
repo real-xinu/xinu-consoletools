@@ -266,6 +266,7 @@ handlebreak( devout )
 			printf( "z\t: suspend\n\r" );
 			printf( "d\t: download image\n\r" );
 			printf( "g\t: download default image (xinu) and powercycle backend\n\r" );
+			printf( "o\t: power off backend\n\r" );
 			printf( "p\t: powercycle backend\n\r" );
 			printf( "s\t: spawn a program\n\r" );
 			printf( "q, ^D\t: quit\n\r" );
@@ -277,6 +278,7 @@ handlebreak( devout )
 
 		case '\004':
 		case 'q':
+			subconnect( connection, "SHUTDOWN", "-sd", host, NO_FILE_NEEDED );
 			return( 0 );
 
 		case 'c':
@@ -320,6 +322,16 @@ handlebreak( devout )
 			
 			/* Successful download of default file		*/
 			/*	"fall through" to power cycle		*/
+			
+		case 'o':
+			restoreTTY();
+			if( subconnect( connection, "SHUTDOWN", "-sd", host,
+					NO_FILE_NEEDED ) == 0 ) {
+				setTTY();
+				return( 1 );
+			}
+			setTTY();
+			break;
 			
 		case 'p':
 			restoreTTY();
