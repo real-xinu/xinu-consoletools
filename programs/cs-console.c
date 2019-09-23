@@ -323,9 +323,9 @@ handlebreak( devout )
 			/* Successful download of default file		*/
 			/*	"fall through" to power cycle		*/
 			
-		case 'o':
+		case 'p':
 			restoreTTY();
-			if( subconnect( connection, "SHUTDOWN", "-sd", host,
+			if( subconnect( connection, "POWERCYCLE", "-pc", host,
 					NO_FILE_NEEDED ) == 0 ) {
 				setTTY();
 				return( 1 );
@@ -333,9 +333,9 @@ handlebreak( devout )
 			setTTY();
 			break;
 			
-		case 'p':
+		case 'o':
 			restoreTTY();
-			if( subconnect( connection, "POWERCYCLE", "-pc", host,
+			if( subconnect( connection, "SHUTDOWN", "-sd", host,
 					NO_FILE_NEEDED ) == 0 ) {
 				setTTY();
 				return( 1 );
